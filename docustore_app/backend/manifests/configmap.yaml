@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docustore-config
+data:
+  config.properties: |
+    MONGODB_URL=mongodb://mongodb.mongo.svc.cluster.local:27017/?directConnection=true&retryWrites=false
+    MONGODB_AUTH-MECHANISM=SCRAM-SHA-256
+    MONGODB_DATABASE=docustore
+    MONGODB_COLLECTION=documents
+    ENABLE_TLS=false

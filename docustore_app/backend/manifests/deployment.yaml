@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: docustore-sa
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docustore
+spec:
+  selector:
+    app: docustore
+  ports:
+    - name: docustore
+      port: 8080
+      targetPort: 8080
+  clusterIP: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docustore
+spec:
+  selector:
+    matchLabels:
+      app: docustore
+  template:
+    metadata:
+      labels:
+        app: docustore
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
+      serviceAccountName: docustore-sa
+      containers:
+        - name: docustore
+          image: pathogen/docustore-backend:v0.0.1
+          env:
+            - name: CONFIG_PATH
+              value: "/workspace/config/"
+            - name: CONFIG_NAME
+              value: "config"
+            - name: SECRET_CONFIG_PATH
+              value: "/secret/database-secret/"
+            - name: SECRET_CONFIG_NAME
+              value: "secret"
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          securityContext:
+            capabilities:
+              add:
+                - NET_BIND_SERVICE
+          volumeMounts:
+            - name: docustore-config
+              mountPath: /workspace/config/
+              readOnly: true
+            - name: docustore-secret
+              mountPath: /secret/database-secret/
+              readOnly: true
+          ports:
+            - containerPort: 8080
+      volumes:
+        - name: docustore-config
+          projected:
+            sources:
+              - configMap:
+                  name: docustore-config
+        - name: docustore-secret
+          secret:
+            secretName: docustore-backend-secret
+            optional: false
