@@ -1,0 +1,3 @@
+<template>
+  <Documents />
+</template>

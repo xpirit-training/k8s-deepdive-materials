@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: docustore-backend-sa
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docustore-backend
+spec:
+  selector:
+    app: docustore-backend
+  ports:
+    - name: docustore-backend
+      port: 8080
+      targetPort: 8080
+  clusterIP: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docustore-backend
+spec:
+  selector:
+    matchLabels:
+      app: docustore-backend
+  template:
+    metadata:
+      labels:
+        app: docustore-backend
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
+      serviceAccountName: docustore-backend-sa
+      containers:
+        - name: docustore-backend
+          image: pathogen/docustore-backend:v0.1.9
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CONFIG_PATH
+              value: "/workspace/config/"
+            - name: CONFIG_NAME
+              value: "config"
+            - name: SECRET_CONFIG_PATH
+              value: "/secret/database-secret/"
+            - name: SECRET_CONFIG_NAME
+              value: "secret"
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          securityContext:
+            capabilities:
+              add:
+                - NET_BIND_SERVICE
+          volumeMounts:
+            - name: docustore-backend-config
+              mountPath: /workspace/config/
+              readOnly: true
+            - name: docustore-backend-secret
+              mountPath: /secret/database-secret/
+              readOnly: true
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: docustore-backend-config
+          projected:
+            sources:
+              - configMap:
+                  name: docustore-backend-config
+        - name: docustore-backend-secret
+          secret:
+            secretName: docustore-backend-secret
+            optional: false

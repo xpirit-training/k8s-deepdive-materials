@@ -1,0 +1,10 @@
+build
+.dockerignore
+Dockerfile
+*.md
+*.lock
+/.nuxt
+/.output
+
+.gitignore
+README.md

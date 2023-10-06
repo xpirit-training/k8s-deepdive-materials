@@ -1,0 +1,41 @@
+html, body , #__nuxt{
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: rgb(17, 27, 39);
+  color: white;
+}
+
+/* html.dark {
+  background: #222;
+  color: white;
+} */
+
+[type="text"],
+[type="email"],
+[type="url"],
+[type="password"],
+[type="number"],
+[type="date"],
+[type="datetime-local"],
+[type="month"],
+[type="search"],
+[type="tel"],
+[type="time"],
+[type="week"],
+[multiple],
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-top: 0.5rem;
+  padding-right: 0.75rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}

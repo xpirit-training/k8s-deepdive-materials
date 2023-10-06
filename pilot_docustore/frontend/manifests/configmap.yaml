@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docustore-frontend-config
+data: 
+  NUXT_PUBLIC_API_BASE: "http://localhost:8080"
