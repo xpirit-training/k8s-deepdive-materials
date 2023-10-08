@@ -1,6 +1,0 @@
-# kubectl
-
-## Windows
-
-## Linux
-

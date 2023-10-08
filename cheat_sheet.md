@@ -111,4 +111,4 @@ explore krew plugins with `kubectl krew search`
 
 `kubectl cp <pod-name:<pod-path> <local-path>`
 
-`kubectl run -it nicolaka/netshoot -- bash`
+`kubectl run -it --image=nicolaka/netshoot -- bash`
