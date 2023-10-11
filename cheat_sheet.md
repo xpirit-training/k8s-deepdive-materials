@@ -27,15 +27,21 @@ Test with `kubectl config current-context` and `kubectl get nodes`
 Who has time to type `kubectl` ? `alias k=kubectl`
 
 
-Do this! `source <(kubectl completion bash)`
+Do this! `
 
+```
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -F __start_kubectl k' >>~/.bashrc
+source ~/.bashrc
+```
 Krew is a plugin manager for kubectl that can help us with exploring the cluster
 ```bash
 # Install Krew
 (
   set -x; cd "$(mktemp -d)" &&
-  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz" &&
-  tar zxvf krew.tar.gz &&
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_amd64.tar.gz" &&
+  tar zxvf krew-linux_amd64.tar.gz &&
   KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
   "$KREW" install krew
 )
