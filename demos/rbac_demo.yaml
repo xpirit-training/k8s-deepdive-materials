@@ -1,25 +1,88 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: rbac-demo
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kubectl-sa
+  namespace: rbac-demo
+automountServiceAccountToken: false
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
-  name: namespace-reader
+  name: nodegetter
 rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "list"]
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nodegetter
+  namespace: rbac-demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nodegetter
+subjects:
+- kind: ServiceAccount
+  name: kubectl-sa
+  namespace: rbac-demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: configmapgetter
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: read-namespaces
+  name: configmapgetter
+  namespace: rbac-demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: configmapgetter
+subjects:
+- kind: ServiceAccount
+  name: kubectl-sa
+  namespace: rbac-demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: rbac-demo
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: rbac-demo
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: namespace-reader
+  name: pod-reader
 subjects:
 - kind: ServiceAccount
   name: kubectl-sa
@@ -28,6 +91,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: kubectl-pod
+  namespace: rbac-demo
 spec:
   containers:
   - name: kubectl-container
@@ -37,3 +101,11 @@ spec:
     - -c
     - sleep infinity
   serviceAccountName: kubectl-sa
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: can-you-find-me
+  namespace: rbac-demo
+data:
+  yup: you-found-me

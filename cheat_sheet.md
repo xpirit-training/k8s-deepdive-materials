@@ -35,7 +35,11 @@ echo 'alias k=kubectl' >>~/.bashrc
 echo 'complete -F __start_kubectl k' >>~/.bashrc
 source ~/.bashrc
 ```
+
+
 Krew is a plugin manager for kubectl that can help us with exploring the cluster
+
+
 ```bash
 # Install Krew
 (

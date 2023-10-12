@@ -1,0 +1,20 @@
+# kubectl autoscale deployment docustore-backend --cpu-percent=20 --min=1 --max=4
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: docustore-backend
+  namespace: docustore
+spec:
+  maxReplicas: 4
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 20
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: docustore-backend

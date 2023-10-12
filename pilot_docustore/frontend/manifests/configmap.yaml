@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: docustore-frontend-config
 data: 
-  NUXT_PUBLIC_API_BASE: "http://localhost:8080"
+  NUXT_PUBLIC_API_BASE: "http://localhost:8080" # change me if you use ingress in k8s

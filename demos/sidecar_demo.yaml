@@ -1,7 +1,13 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: sidecar
+---
+apiVersion: v1
 kind: Pod
 metadata:
   name: nginx-with-sidecar
+  namespace: sidecar
 spec:
   containers:
   - name: nginx
@@ -9,7 +15,6 @@ spec:
     volumeMounts:
     - name: nginx-logs
       mountPath: /var/log/nginx
-
   - name: log-tailer
     image: busybox
     args:
@@ -19,7 +24,6 @@ spec:
     volumeMounts:
     - name: nginx-logs
       mountPath: /var/log/nginx
-
   volumes:
   - name: nginx-logs
     emptyDir: {}
